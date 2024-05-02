@@ -1,0 +1,6 @@
+@SCIT_HostAddress = http://localhost:5251
+
+GET {{SCIT_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
