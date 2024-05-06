@@ -4,6 +4,7 @@ using SCIT.Data;
 using SCIT.Interfaces;
 using SCIT.Repositories;
 using SCIT.Services;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -36,6 +37,14 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 // Add services to the container.
 builder.Services.AddScoped<IProgrammesRepository, ProgrammesRepository>();
 builder.Services.AddScoped<ProgrammesService>();
+builder.Services.AddScoped<IStaffRepository, StaffRepository>();
+builder.Services.AddScoped<StaffService>();
+builder.Services.AddScoped<IActivitiesRepository, ActivitiesRepository>();
+builder.Services.AddScoped<ActivitiesService>();
+builder.Services.AddScoped<IProgrammeApplicationsRepository, ProgrammeApplicationsRepository>();
+builder.Services.AddScoped<ProgrammeApplicationsService>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<DepartmentService>();
 
 
 

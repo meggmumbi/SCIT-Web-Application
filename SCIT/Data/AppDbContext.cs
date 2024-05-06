@@ -10,6 +10,11 @@ namespace SCIT.Data
         }
 
         public DbSet<Programmes> Programmes { get; set; }
+        public DbSet<Staff> Staff { get; set; }
+        public DbSet<Activities> Activities { get; set; }
+        public DbSet<Department> Department { get; set; }
+
+        public DbSet<ProgrammeApplications> ProgrammeApplications { get; set; }
 
     }
 }
