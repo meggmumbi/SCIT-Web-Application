@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SCIT.Entities;
 
 namespace SCIT.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
         {
@@ -15,6 +16,8 @@ namespace SCIT.Data
         public DbSet<Department> Department { get; set; }
 
         public DbSet<ProgrammeApplications> ProgrammeApplications { get; set; }
+
+        public DbSet<ApplicationUser> Users { get; set; }
 
     }
 }

@@ -1,11 +1,18 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using SCIT;
 using SCIT.Data;
+using SCIT.Entities;
 using SCIT.Interfaces;
 using SCIT.Repositories;
 using SCIT.Services;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 string[] _allowedOrigins;
@@ -34,6 +41,30 @@ var configuration = builder;
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
 // Add services to the container.
 builder.Services.AddScoped<IProgrammesRepository, ProgrammesRepository>();
 builder.Services.AddScoped<ProgrammesService>();
@@ -45,6 +76,12 @@ builder.Services.AddScoped<IProgrammeApplicationsRepository, ProgrammeApplicatio
 builder.Services.AddScoped<ProgrammeApplicationsService>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<DepartmentService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddScoped<ActivityScheduler>();
+
+
 
 
 
@@ -74,6 +111,7 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
+app.UseAuthentication();
 app.UseCors(MyAllowSpecificOrigins);
 app.MapControllers();
 
