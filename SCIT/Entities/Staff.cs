@@ -6,12 +6,14 @@
         public string Name { get; set; }
         public Guid? DepartmentId { get; set; }
         public string Specializations { get; set;}
-        public string Title { get; set;}
+        public string? Title { get; set;}
         public string StaffType { get; set;}
 
-
+        public string StaffId { get; set; }
         public string Designation { get; set;}
         public DateTime Dob { get; set; }
         public string Gender { get; set; }
+
+        public string? Image { get; set; }
     }
 }

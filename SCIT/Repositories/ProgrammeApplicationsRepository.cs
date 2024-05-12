@@ -22,7 +22,7 @@ namespace SCIT.Repositories
         public async Task DeleteAsync(Guid id)
         {
            var applications =  await GetByIdAsync(id);
-           if(applications == null)
+           if(applications != null)
             {
                 _dbContext.ProgrammeApplications.Remove(applications);
                 await _dbContext.SaveChangesAsync();

@@ -26,8 +26,12 @@ namespace SCIT.Controllers
             {
                 return Conflict("Email already exists");
             }
+            if (model.Role == "staff" && string.IsNullOrEmpty(model.StaffId))
+            {
+                return BadRequest("StaffId is required for staff role");
+            }
 
-            var result = await _userService.CreateUserAsync(model.Email, model.Password);
+            var result = await _userService.CreateUserAsync(model.Email, model.Password, model.Role, model.StaffId);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
@@ -44,8 +48,28 @@ namespace SCIT.Controllers
         {
             try
             {
-                var token = await _jwtService.GenerateJwtTokenAsync(model.Email, model.Password);
-                return Ok(new { Token = token });
+                var user = await _userService.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    return BadRequest("Invalid email or password");
+                }
+
+                var signInResult = await _userService.CheckPasswordSignInAsync(user, model.Password);
+                if (!signInResult.Succeeded)
+                {
+                    return BadRequest("Invalid email or password");
+                }
+
+                var token = _jwtService.GenerateJwtToken(user);
+                // Return user details along with token
+                return Ok(new
+                {
+                    Token = token,
+                    Email = user.Email,
+                    Role = user.Role,
+                    StaffId = user.StaffId
+                    // Add other user details as needed
+                });
             }
             catch (Exception ex)
             {
