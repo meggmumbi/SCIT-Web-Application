@@ -23,18 +23,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 if (!builder.Environment.IsDevelopment())
 {
-    var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-    var basePath = isWindows ? @"C:\opt" : @"/var/pct";
-    builder.Configuration.SetBasePath(basePath)
+    // Remove the dynamic setting of the base path
+    builder.Configuration
         .AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true)
         .AddEnvironmentVariables();
 }
 else
 {
     builder.Configuration
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-    .AddEnvironmentVariables();
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+        .AddEnvironmentVariables();
 }
 var configuration = builder;
 
